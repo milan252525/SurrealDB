@@ -302,10 +302,10 @@ async def main():
             lat += random.uniform(-0.5, 0.5)  # 1 lat or long is +- 111 km
             long += random.uniform(-0.5, 0.5)
 
-            key = f"restaurant:{name.lower().replace(' ', '_')}"
+            key = f"{name.lower().replace(' ', '_')}"
 
             await db.create(
-                key,
+                f"restaurant:{key}",
                 {
                     "name": name,
                     "location": {"type": "Point", "coordinates": [lat, long]},
@@ -314,7 +314,7 @@ async def main():
 
             await db.query(
                 f"""
-                RELATE {key}->located_in->city:{city.lower()};
+                RELATE restaurant:{key}->located_in->city:{city.lower()};
                 """
             )
 
@@ -345,7 +345,7 @@ async def main():
 
                 await db.query(
                     f"""
-                    RELATE food:{key}->is_served_at->restaurant:{restaurant};
+                    RELATE food:{key}->served_at->restaurant:{restaurant};
                     """
                 )
 

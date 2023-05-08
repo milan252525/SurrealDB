@@ -5,14 +5,11 @@ from timer_util import Timer
 from surrealdb import Surreal
 
 """
-This query calculates distance from Prague for each city in ascending order
+This query returns all cities visited by anyone called Jan
 
-SELECT center FROM city:praha).center 
-- gets coordinates of Prague's center
-
-<int> geo::distance(center, ...)/1000 AS prague_dist
-- calculates the distance between Prague and another city, converting it to kilometers and int
-
+array::distinct(->reviewed.restaurant->located_in->city.name) AS cities 
+- uses graph relation to select all cities from resturants a user reviewed
+- array::distinct drops duplicate values
 """
 
 
@@ -27,17 +24,16 @@ async def main():
             timer.start()
             res = await db.query(
                 """
-                SELECT name, 
-                <int> geo::distance(center, (SELECT center FROM city:praha).center)/1000 AS prague_dist 
-                FROM city 
-                WHERE name != "Praha"
-                ORDER BY prague_dist;
-            """
+                SELECT name, surname, 
+                    array::distinct(->reviewed.restaurant->located_in->city.name) AS cities 
+                FROM user
+                WHERE name == 'Jan';
+                """
             )
             timer.end()
             db_times.append(res[0]["time"])
         timer.print(
-            "Select with geo function (measured by script, includes network communication, 100 repetitions)"
+            "Select with graph relations (measured by script, includes network communication, 100 repetitions)"
         )
         print("DB execution times (5 random samples)")
         print(random.choices(db_times, k=5))
