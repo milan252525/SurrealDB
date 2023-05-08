@@ -20,8 +20,4 @@ DEFINE FIELD center ON TABLE city TYPE geometry (point);
 
 DEFINE TABLE food;
 DEFINE FIELD name ON TABLE food TYPE string;
-DEFINE FIELD center ON TABLE food TYPE array;
-
-DEFINE TABLE review;
-DEFINE FIELD stars ON TABLE review TYPE number;
-DEFINE FIELD text ON TABLE review TYPE string;
+DEFINE FIELD ingredients ON TABLE food TYPE array;
